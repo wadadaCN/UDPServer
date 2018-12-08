@@ -10,7 +10,7 @@ public class UDPPrintServer extends UDPServer{
     }
 
     @Override
-    public void response(DatagramSocket socket, DatagramPacket request){
+    public void response(DatagramSocket socket, DatagramPacket request) throws UnknownHostException{
         String jsonData = new String(request.getData(), request.getOffset(), request.getLength());
         Gson gson = new Gson();
         GPSdata gpsdata = gson.fromJson(jsonData, GPSdata.class);
@@ -38,8 +38,13 @@ public class UDPPrintServer extends UDPServer{
                 System.out.println(e.getMessage());
             }
         }
-
+        new makeHTML(GPS_E, GPS_N);
         //System.out.println(new String(request.getData(), request.getOffset(), request.getLength()) + request.getAddress().toString() + ":" + request.getPort());
+        String send = "{\n" +
+                "\t\"Warn_Ctl\":\"1\"\n" +
+                "}";
+        UdpSender u = new UdpSender(send, InetAddress.getByName("127.0.0.1"), 4000);
+        u.sendPacket();
     }
 
     public static void main(String[] args){
